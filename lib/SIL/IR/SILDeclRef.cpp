@@ -697,6 +697,28 @@ std::string SILDeclRef::mangle(ManglingKind MKind) const {
             return SS.str();
           }
           return namedClangDecl->getName().str();
+        } else if (auto objcDecl = dyn_cast<clang::ObjCMethodDecl>(clangDecl)) {
+          if (objcDecl->isDirectMethod()) {
+            // FIXME: Use `clang::MangleContext::mangleObjCMethodName()`.
+            llvm::StringRef interfaceName;
+            if (auto interfaceDecl = dyn_cast<clang::ObjCInterfaceDecl>(
+                    objcDecl->getDeclContext())) {
+              interfaceName = interfaceDecl->getName();
+            } else if (auto categoryDecl = dyn_cast<clang::ObjCCategoryDecl>(
+                            objcDecl->getDeclContext())) {
+              interfaceName = categoryDecl->getClassInterface()->getName();
+            } else {
+              assert(
+                  false &&
+                  "Objective-C declaration must be an interface or a category");
+            }
+            std::string storage;
+            llvm::raw_string_ostream SS(storage);
+            SS << '\01' << (objcDecl->isInstanceMethod() ? '-' : '+') << '['
+               << interfaceName << ' ' << objcDecl->getSelector().getAsString()
+               << ']';
+            return SS.str();
+          }
         }
       }
     }

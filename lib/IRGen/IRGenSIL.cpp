@@ -2469,6 +2469,10 @@ Callee LoweredValue::getCallee(IRGenFunction &IGF,
   switch (kind) {
   case Kind::FunctionPointer: {
     auto &fn = getFunctionPointer();
+    if (calleeInfo.OrigFnType->getRepresentation() ==
+        SILFunctionTypeRepresentation::ObjCMethod) {
+      return getObjCDirectMethodCallee(std::move(calleeInfo), fn, selfValue);
+    }
     return Callee(std::move(calleeInfo), fn, selfValue);
   }
 
