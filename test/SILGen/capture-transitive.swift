@@ -1,7 +1,4 @@
-// RUN: %target-swift-emit-silgen %s | %FileCheck %s --check-prefixes=CHECK,CHECK-NO-WEAK-LET
-// RUN: %target-swift-emit-silgen -enable-upcoming-feature ImmutableWeakCaptures %s | %FileCheck %s --check-prefixes=CHECK,CHECK-HAS-WEAK-LET
-
-// REQUIRES: swift_feature_ImmutableWeakCaptures
+// RUN: %target-swift-emit-silgen %s | %FileCheck %s
 
 // https://github.com/apple/swift/issues/50924
 
